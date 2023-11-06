@@ -1,0 +1,45 @@
+---
+
+- name: Install nginx on Debian client
+  hosts: debian_clients  # Adjust this to match your inventory group or client name
+  become: yes  # This is to execute tasks as sudo
+  tasks:
+    - name: Ensure APT package cache is updated
+      apt:
+        update_cache: yes
+
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Ensure nginx service is started and enabled on boot
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Josue
+      user:
+        name: J
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Kwame
+      user:
+        name: kwame
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Add SSH key for Kwame
+      authorized_key:
+        user: kwame
+        state: present
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMLDqdxcCkS4/vioXy1e77FSZ2NQoXcD1erlyy9NZ6UG kwame@informatux.net"
+
+    - name: Give sudo privileges to Kwame
+      lineinfile:
+        dest: /etc/sudoers
+        line: 'kwame ALL=(ALL:ALL) NOPASSWD:ALL'
+        state: present
+        validate: 'visudo -cf %s'
